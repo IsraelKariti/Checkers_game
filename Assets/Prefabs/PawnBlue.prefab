@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 1626388887666033707}
   - component: {fileID: 1626388887666033706}
   - component: {fileID: 1626388887666033756}
+  - component: {fileID: -8639452630576779687}
   m_Layer: 0
   m_Name: PawnBlue
   m_TagString: Untagged
@@ -263,8 +264,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 820f94d57893bf843a0cd6d93313fe6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  handType: 3
-  proximityType: 3
+  handType: 0
+  proximityType: 0
   scaleMinimum: 0.3
   scaleMaximum: 5
   relativeToInitialState: 1
@@ -356,9 +357,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: HighlightWires
+      - m_Target: {fileID: -8639452630576779687}
+        m_TargetAssemblyTypeName: PawnScript, Assembly-CSharp
+        m_MethodName: ResolveMovement
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -446,6 +447,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &-8639452630576779687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1626388887666268169}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 103118abfc4ecd84a935cff29231b83d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5465864195235670596
 GameObject:
   m_ObjectHideFlags: 0

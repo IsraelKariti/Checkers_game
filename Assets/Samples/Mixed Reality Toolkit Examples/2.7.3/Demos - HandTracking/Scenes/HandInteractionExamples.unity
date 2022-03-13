@@ -15860,7 +15860,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pawnRedPrefab: {fileID: 447442785150064465, guid: a312aa9950d4ee9488770a8a5bd9d1da, type: 3}
   pawnBluePrefab: {fileID: 1626388887666268169, guid: 6c1f483175d21fa4ba88b3c6ae303a14, type: 3}
-  board: {fileID: 2013244051}
+  visualBoard: {fileID: 2013244051}
 --- !u!4 &1155461923
 Transform:
   m_ObjectHideFlags: 0
