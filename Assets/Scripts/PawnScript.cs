@@ -140,6 +140,8 @@ public class PawnScript : MonoBehaviour
     {
         // check how many blue and red pawns between src and dst
         int redCounter = 0;
+        int redX = 0;
+        int redZ = 0;
         int blueCounter = 0;
         // the direction of the diagonal from src to dst
         int xDir = xIndex < dropXIndex ? 1 : -1;
@@ -153,14 +155,31 @@ public class PawnScript : MonoBehaviour
             if (pt == PawnType.BLUE_KING || pt == PawnType.BLUE_PAWN)
                 blueCounter++;
             if (pt == PawnType.RED_KING || pt == PawnType.RED_PAWN)
+            {
                 redCounter++;
-            
+                // save the matrix indexes of the rival
+                redX = x;
+                redZ = z;
+            }
         }
         // there are foes in the way OR there are more than one rival
         if (blueCounter > 0 || redCounter > 1)
             return false;
 
-
+        // move this pawn on the board matrix
+        boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
+        boardMatrix[zIndex, xIndex] = null;
+        if (redCounter > 0)
+        {
+            // eat the pawn in the middle
+            Destroy(checkersManager.BoardMatrix[redZ, redX]);
+            checkersManager.BoardMatrix[redZ, redX] = null;
+            // update number of enemies
+            checkersManager.decRed();
+        }
+        
+        //TODO: enter repeat mode
+        return true;
     }
 
 
