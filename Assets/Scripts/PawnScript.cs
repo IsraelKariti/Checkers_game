@@ -125,6 +125,8 @@ public class PawnScript : MonoBehaviour
             transform.localPosition = SnapBack();
             return;
         }
+        HandlePostStep();
+
     }
 
     // if we have got this far it means that the correct pawn was picked, and then released in bounds, on an empty square
@@ -161,9 +163,7 @@ public class PawnScript : MonoBehaviour
                 return false;
             }
         }
-        HandlePostStep();
         
-
         return true;
     }
 
@@ -182,15 +182,23 @@ public class PawnScript : MonoBehaviour
         else if ((pawnType == PawnType.BLUE_KING || pawnType == PawnType.BLUE_PAWN) && zIndex == 7)
         {
             crown.SetActive(true);
+            checkersManager.SwitchPlayer();
+
         }
         else if ((pawnType == PawnType.RED_KING || pawnType == PawnType.RED_PAWN) && zIndex == 0)
         {
             crown.SetActive(true);
+            checkersManager.SwitchPlayer();
+
         }
         // in case step included eating 
         else if (rivalEaten && IsPossibleToEatAgain())// check if this pawn can eat again
         {
             checkersManager.EnableRepeat();
+        }
+        else
+        {
+            checkersManager.SwitchPlayer();
         }
     }
 
@@ -198,6 +206,7 @@ public class PawnScript : MonoBehaviour
     {
         if(IsPossibleToEatAgainFwdRight() || IsPossibleToEatAgainFwdLeft() || IsPossibleToEatAgainBwdRight() || IsPossibleToEatAgainBwdLeft())
         {
+            checkersManager.Repeater = this;
             return true;
         }
         return false;
@@ -249,6 +258,8 @@ public class PawnScript : MonoBehaviour
         if (farX < 0 || farX > 7 || farZ < 0 || farZ > 7)
             return false;
         if (boardMatrix[farZ, farX] != null)
+            return false;
+        if (boardMatrix[nearZ, nearX] == null)
             return false;
         PawnType nearPawnType = boardMatrix[nearZ, nearX].GetComponent<PawnScript>().pawnType;
         if (nearPawnType != rivalPawn && nearPawnType != rivalKing)
@@ -314,8 +325,7 @@ public class PawnScript : MonoBehaviour
         xIndex = dropXIndex;
         zIndex = dropZIndex;
 
-        //TODO: enter repeat mode
-        checkersManager.SwitchPlayer();
+        
         return true;
     }
     private bool AttemptKingEat()
@@ -420,8 +430,6 @@ public class PawnScript : MonoBehaviour
         {
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
-            checkersManager.SwitchPlayer();
-
 
             // update local indices
             xIndex = dropXIndex;
@@ -438,7 +446,6 @@ public class PawnScript : MonoBehaviour
         {
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
-            checkersManager.SwitchPlayer();
 
             // update local indices
             xIndex = dropXIndex;
@@ -454,7 +461,6 @@ public class PawnScript : MonoBehaviour
         {
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
-            checkersManager.SwitchPlayer();
 
             // update local indices
             xIndex = dropXIndex;
@@ -470,7 +476,6 @@ public class PawnScript : MonoBehaviour
         {
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
-            checkersManager.SwitchPlayer();
 
             // update local indices
             xIndex = dropXIndex;
