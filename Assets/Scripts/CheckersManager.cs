@@ -2,21 +2,34 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+public enum GameStatus
+{
+    RED_TURN,
+    BLUE_TURN,
+    RED_REPEAT,// this status is for when the red player has eaten and is allowed for another eat
+    BLUE_REPEAT,
+    RED_KING,
+    BLUE_KING
+}
 public class CheckersManager : MonoBehaviour
 {
     public GameObject pawnRedPrefab;
     public GameObject pawnBluePrefab;
     public GameObject visualBoard;
-    //public CheckersManager checkersManager;
-  
 
+    //public CheckersManager checkersManager;
+
+    private GameStatus gameStatus;
     private List<GameObject> redPawnList;
     private List<GameObject> bluePawnList;
     private int[,] boardMatrix;
+
+    public GameStatus GameStatus { get => gameStatus; set => gameStatus = value; }
+
     // Start is called before the first frame update
     void Start()
     {
+        gameStatus = GameStatus.BLUE_TURN;
         redPawnList = new List<GameObject>();
         bluePawnList = new List<GameObject>();
         boardMatrix = new int[8, 8] { 
@@ -84,7 +97,7 @@ public class CheckersManager : MonoBehaviour
             // update pawn fields
             PawnScript pawnScript = temp.GetComponent<PawnScript>();
             // give the pawn ref to this script
-            pawnScript.setCheckersManager(this);
+            pawnScript.CheckersManager = this;
             // set the type of the pawn
             pawnScript.Type = type;
             // set pawn index in board matrix
