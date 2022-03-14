@@ -47,7 +47,7 @@ public class PawnScript : MonoBehaviour
     public CheckersManager CheckersManager { get => checkersManager; set => checkersManager = value; }
     public GameObject[,] BoardMatrix { get => boardMatrix; set => boardMatrix = value; }
     public int ForwardMovement { get => fwd; set => fwd = value; }
-
+    public GameObject crown;
     //private void OnTriggerEnter(Collider other)
     //{
     //    if (isHeld && other.gameObject.CompareTag("pawn")){
