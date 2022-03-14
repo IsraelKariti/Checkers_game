@@ -136,6 +136,8 @@ public class PawnScript : MonoBehaviour
         // check if the player dropped the pawn back in its original position
         if(!CheckIfOrigAndDestDiffer())
         {
+            Debug.Log("You havn't moved, try again!");
+
             return false;
         }
 
@@ -216,7 +218,12 @@ public class PawnScript : MonoBehaviour
         boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
         boardMatrix[zIndex, xIndex] = null;
 
+        // update local indices
+        xIndex = dropXIndex;
+        zIndex = dropZIndex;
+
         //TODO: enter repeat mode
+        checkersManager.SwitchPlayer();
         return true;
     }
     private bool AttemptKingEat()
@@ -255,6 +262,11 @@ public class PawnScript : MonoBehaviour
         boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
         boardMatrix[zIndex, xIndex] = null;
 
+
+        // update local indices
+        xIndex = dropXIndex;
+        zIndex = dropZIndex;
+
         // check if this step is eat 
         if (rivalCounter > 0)
         {
@@ -285,6 +297,7 @@ public class PawnScript : MonoBehaviour
         // check if the blue player first step is move with no eating
         if(AttemptMoveFwdRight() || AttemptMoveFwdLeft() )
         {
+            
             return true;
         }
         // check if the blue first step is an eating step
@@ -314,6 +327,13 @@ public class PawnScript : MonoBehaviour
         {
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
+            checkersManager.SwitchPlayer();
+
+
+            // update local indices
+            xIndex = dropXIndex;
+            zIndex = dropZIndex;
+
             return true;
         }
         return false;
@@ -325,6 +345,11 @@ public class PawnScript : MonoBehaviour
         {
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
+            checkersManager.SwitchPlayer();
+
+            // update local indices
+            xIndex = dropXIndex;
+            zIndex = dropZIndex;
             return true;
         }
         return false;
@@ -336,6 +361,11 @@ public class PawnScript : MonoBehaviour
         {
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
+            checkersManager.SwitchPlayer();
+
+            // update local indices
+            xIndex = dropXIndex;
+            zIndex = dropZIndex;
             return true;
         }
         return false;
@@ -347,6 +377,11 @@ public class PawnScript : MonoBehaviour
         {
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
+            checkersManager.SwitchPlayer();
+
+            // update local indices
+            xIndex = dropXIndex;
+            zIndex = dropZIndex;
             return true;
         }
         return false;
@@ -365,6 +400,9 @@ public class PawnScript : MonoBehaviour
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
 
+            // update local indices
+            xIndex = dropXIndex;
+            zIndex = dropZIndex;
             // eat the pawn in the middle
             Destroy(boardMatrix[zIndex + fwd, xIndex + 1]);
             boardMatrix[zIndex + fwd, xIndex + 1] = null;
@@ -389,6 +427,9 @@ public class PawnScript : MonoBehaviour
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
 
+            // update local indices
+            xIndex = dropXIndex;
+            zIndex = dropZIndex;
             // eat the pawn in the middle
             Destroy(boardMatrix[zIndex + fwd, xIndex - 1]);
             boardMatrix[zIndex + fwd, xIndex - 1] = null;
@@ -412,6 +453,10 @@ public class PawnScript : MonoBehaviour
             // move this pawn on the board matrix
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
+
+            // update local indices
+            xIndex = dropXIndex;
+            zIndex = dropZIndex;
 
             // eat the pawn in the middle
             Destroy(boardMatrix[zIndex - fwd,  xIndex + 1]);
@@ -437,6 +482,10 @@ public class PawnScript : MonoBehaviour
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
 
+            // update local indices
+            xIndex = dropXIndex;
+            zIndex = dropZIndex;
+
             // eat the pawn in the middle
             Destroy(boardMatrix[zIndex - fwd,xIndex - 1 ]);
             boardMatrix[zIndex - fwd, xIndex - 1 ] = null;
@@ -455,8 +504,6 @@ public class PawnScript : MonoBehaviour
             return false;
         return true;
     }
-
-    
 
     // check if the pawn movement on the x and z axis has the same absolute value
     private bool CheckIfMoveIsDiagonal()

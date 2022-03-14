@@ -67,10 +67,10 @@ public class CheckersManager : MonoBehaviour
         InitLine(xPos, zPos, pawnBluePrefab, PawnType.BLUE_PAWN);
 
         // initialize the first line
-        InitLine(xPos+0.1f, zPos+0.1f, pawnBluePrefab, PawnType.BLUE_PAWN);
+        InitLine(xPos + 0.1f, zPos + 0.1f, pawnBluePrefab, PawnType.BLUE_PAWN);
 
         // initialize the first line
-        InitLine(xPos, zPos+0.2f, pawnBluePrefab, PawnType.BLUE_PAWN);
+        InitLine(xPos, zPos + 0.2f, pawnBluePrefab, PawnType.BLUE_PAWN);
 
     }
 
@@ -125,5 +125,9 @@ public class CheckersManager : MonoBehaviour
         Repeater = pawnScript;
 
     }
-
+    // if blue was playing switch to red, and vice versa
+    public void SwitchPlayer()
+    {
+        gameStatus = (gameStatus == GameStatus.BLUE_REPEAT || gameStatus == GameStatus.BLUE_TURN) ? GameStatus.RED_TURN : GameStatus.BLUE_TURN;
+    }
 }
