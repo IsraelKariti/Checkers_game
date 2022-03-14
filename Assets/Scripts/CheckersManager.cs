@@ -6,10 +6,8 @@ public enum GameStatus
 {
     RED_TURN,
     BLUE_TURN,
-    RED_REPEAT,// this status is for when the red player has eaten and is allowed for another eat
-    BLUE_REPEAT,
-    RED_KING,
-    BLUE_KING
+    RED_REPEAT,// this status is for when the red player has eaten and MUST eat again
+    BLUE_REPEAT
 }
 public class CheckersManager : MonoBehaviour
 {
@@ -17,31 +15,20 @@ public class CheckersManager : MonoBehaviour
     public GameObject pawnBluePrefab;
     public GameObject visualBoard;
 
-    //public CheckersManager checkersManager;
-
-    private GameStatus gameStatus;
-    private List<GameObject> redPawnList;
-    private List<GameObject> bluePawnList;
-    private int[,] boardMatrix;
 
     public GameStatus GameStatus { get => gameStatus; set => gameStatus = value; }
+    public GameObject[,] BoardMatrix { get => boardMatrix; set => boardMatrix = value; }
 
+    private GameStatus gameStatus;
+    private GameObject[,] boardMatrix;
+    private int redCounter = 12;
+    private int blueCounter = 12;
+    private PawnScript repeater; // this is a reference to the gameobject that is allowed to repeat eat
     // Start is called before the first frame update
     void Start()
     {
         gameStatus = GameStatus.BLUE_TURN;
-        redPawnList = new List<GameObject>();
-        bluePawnList = new List<GameObject>();
-        boardMatrix = new int[8, 8] { 
-            { 1,0,1,0,1,0,1,0},// 1 - blue
-            { 0,1,0,1,0,1,0,1},
-            { 1,0,1,0,1,0,1,0},
-            { 0,0,0,0,0,0,0,0},
-            { 0,0,0,0,0,0,0,0},
-            { 0,2,0,2,0,2,0,2},// 2 - red
-            { 2,0,2,0,2,0,2,0},
-            { 0,2,0,2,0,2,0,2}
-        };
+        BoardMatrix = new GameObject[8, 8];
         InitBoard();
     }
 
@@ -60,13 +47,13 @@ public class CheckersManager : MonoBehaviour
         float zPos = 0.55f;
 
         // initialize the first line
-        InitLine(xPos, zPos, pawnRedPrefab, redPawnList, PawnType.RED_PAWN);
+        InitLine(xPos, zPos, pawnRedPrefab, PawnType.RED_PAWN);
 
         // initialize the first line
-        InitLine(xPos - 0.1f, zPos + 0.1f, pawnRedPrefab, redPawnList, PawnType.RED_PAWN);
+        InitLine(xPos - 0.1f, zPos + 0.1f, pawnRedPrefab, PawnType.RED_PAWN);
 
         // initialize the first line
-        InitLine(xPos, zPos + 0.2f, pawnRedPrefab, redPawnList, PawnType.RED_PAWN);
+        InitLine(xPos, zPos + 0.2f, pawnRedPrefab, PawnType.RED_PAWN);
     }
 
     private void InitBlue()
@@ -76,17 +63,17 @@ public class CheckersManager : MonoBehaviour
         float zPos = 0.05f;
 
         // initialize the first line
-        InitLine(xPos, zPos, pawnBluePrefab, bluePawnList, PawnType.BLUE_PAWN);
+        InitLine(xPos, zPos, pawnBluePrefab, PawnType.BLUE_PAWN);
 
         // initialize the first line
-        InitLine(xPos+0.1f, zPos+0.1f, pawnBluePrefab, bluePawnList, PawnType.BLUE_PAWN);
+        InitLine(xPos+0.1f, zPos+0.1f, pawnBluePrefab, PawnType.BLUE_PAWN);
 
         // initialize the first line
-        InitLine(xPos, zPos+0.2f, pawnBluePrefab, bluePawnList, PawnType.BLUE_PAWN);
+        InitLine(xPos, zPos+0.2f, pawnBluePrefab, PawnType.BLUE_PAWN);
 
     }
 
-    private void InitLine(float xPos, float zPos, GameObject prefab, List<GameObject> list, PawnType type)
+    private void InitLine(float xPos, float zPos, GameObject prefab, PawnType type)
     {
         GameObject temp;
 
@@ -94,20 +81,24 @@ public class CheckersManager : MonoBehaviour
         {
             // create the pawn
             temp = Instantiate(prefab, visualBoard.transform);
-            // update pawn fields
+            // update pawn fields with  useful links
             PawnScript pawnScript = temp.GetComponent<PawnScript>();
             // give the pawn ref to this script
             pawnScript.CheckersManager = this;
+            // give ref to board matrix
+            pawnScript.BoardMatrix = boardMatrix;
             // set the type of the pawn
-            pawnScript.Type = type;
-            // set pawn index in board matrix
-            pawnScript.XIndex = convertPositionToIndex(xPos);
-            // set pawn index in board matrix
-            pawnScript.ZIndex = convertPositionToIndex(zPos);
+            pawnScript.PawnType = type;
+            // set pawn index 
+            int xIndex = convertPositionToIndex(xPos);
+            pawnScript.XIndex = xIndex;
+            // set pawn index 
+            int zIndex = convertPositionToIndex(zPos);
+            pawnScript.ZIndex = zIndex;
             // set the pawn position
             temp.transform.localPosition = new Vector3(xPos, 0.07f, zPos);
-            // save pawn to a list
-            list.Add(temp);
+            // save pawn to board matrix
+            boardMatrix[zIndex, xIndex] = temp;
             xPos += 0.2f;
         }
     }
@@ -117,4 +108,21 @@ public class CheckersManager : MonoBehaviour
         pos *= 10; // convert 0.15 -> 1.5
         return (int)pos;
     }
+
+    // decrease the value of red pawns
+    public void decRed()
+    {
+        redCounter--;
+    }
+    // decrease the value of blue pawns
+    public void decBlue()
+    {
+        blueCounter--;
+    }
+    public void SetRepeater(PawnScript pawnScript)
+    {
+        repeater = pawnScript;
+
+    }
+
 }
