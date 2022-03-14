@@ -119,43 +119,47 @@ public class PawnScript : MonoBehaviour
         }
 
         // 
-        if(checkersManager.GameStatus==GameStatus.BLUE_TURN && pawnType == PawnType.BLUE_PAWN)
+        if(checkersManager.GameStatus == GameStatus.BLUE_TURN || checkersManager.GameStatus == GameStatus.RED_TURN )
         {
-            if(!AttemptPawnFirstStep())
+            if(!AttemptFirstStep())
             {
                 return false;
             }
         }
-        else if(checkersManager.GameStatus == GameStatus.BLUE_REPEAT && pawnType == PawnType.BLUE_PAWN)
+        else if(checkersManager.GameStatus == GameStatus.BLUE_REPEAT || checkersManager.GameStatus == GameStatus.RED_REPEAT)
         {
+            // Check if the repeater is not me
+            if (CheckersManager.Repeater != this)
+                return false;
+
             if (!AttemptPawnRepeatStep())
             {
                 return false;
             }
         }
-        else if (checkersManager.GameStatus == GameStatus.BLUE_TURN && pawnType == PawnType.BLUE_KING)
-        {
-            if (!AttemptKingStep())
-            {
-                return false;
-            }
-        }
-        if(checkersManager.GameStatus==GameStatus.RED_TURN && pawnType == PawnType.RED_PAWN)
-        {
 
-        }
-        else if(checkersManager.GameStatus == GameStatus.RED_REPEAT && pawnType == PawnType.RED_PAWN)
-        {
-
-        }
-        else if (checkersManager.GameStatus == GameStatus.RED_TURN && pawnType == PawnType.RED_KING)
-        {
-
-        }
+   
         return true;
     }
 
+    private bool AttemptFirstStep()
+    {
+        if(pawnType == PawnType.RED_PAWN || pawnType == PawnType.BLUE_PAWN)
+        {
+            return AttemptPawnFirstStep();
+        }
+        else
+        {
+            return AttemptKingStep();
+        }
+    }
+
     private bool AttemptKingStep()
+    {
+        return AttemptKingMove() || AttemptKingEat();
+           
+    }
+    private bool AttemptKingMove()
     {
         // check how many blue and red pawns between src and dst
         int rivalCounter = 0;
@@ -166,7 +170,7 @@ public class PawnScript : MonoBehaviour
         int xDir = xIndex < dropXIndex ? 1 : -1;
         int zDir = zIndex < dropZIndex ? 1 : -1;
         // run on all the squares between the src and dst
-        for(int x = xIndex, z = zIndex; x < dropXIndex; x+=xDir, z += zDir)
+        for (int x = xIndex, z = zIndex; x < dropXIndex; x += xDir, z += zDir)
         {
             if (boardMatrix[z, x] == null)
                 continue;
@@ -184,12 +188,53 @@ public class PawnScript : MonoBehaviour
             }
         }
         // there are foes in the way OR there are more than one rival
-        if (foeCounter > 0 || rivalCounter > 1)
+        if (foeCounter > 0 || rivalCounter > 0)
             return false;
 
         // move this pawn on the board matrix
         boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
         boardMatrix[zIndex, xIndex] = null;
+
+        //TODO: enter repeat mode
+        return true;
+    }
+    private bool AttemptKingEat()
+    {
+        // check how many blue and red pawns between src and dst
+        int rivalCounter = 0;
+        int rivalX = 0;
+        int rivalZ = 0;
+        int foeCounter = 0;
+        // the direction of the diagonal from src to dst
+        int xDir = xIndex < dropXIndex ? 1 : -1;
+        int zDir = zIndex < dropZIndex ? 1 : -1;
+        // run on all the squares between the src and dst
+        for (int x = xIndex, z = zIndex; x < dropXIndex; x += xDir, z += zDir)
+        {
+            if (boardMatrix[z, x] == null)
+                continue;
+            PawnType pt = boardMatrix[z, x].GetComponent<PawnScript>().PawnType;
+            if (pt == rivalPawn || pt == rivalKing)
+            {
+                rivalCounter++;
+                // save the matrix indexes of the rival
+                rivalX = x;
+                rivalZ = z;
+            }
+            else
+            {
+                foeCounter++;
+            }
+        }
+        // there are foes in the way OR there are more than one rival
+        if (foeCounter > 0 || rivalCounter != 1)
+            return false;
+
+        // move this pawn on the board matrix
+        boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
+        boardMatrix[zIndex, xIndex] = null;
+
+        // check if this step is eat 
         if (rivalCounter > 0)
         {
             // eat the pawn in the middle

@@ -18,6 +18,7 @@ public class CheckersManager : MonoBehaviour
 
     public GameStatus GameStatus { get => gameStatus; set => gameStatus = value; }
     public GameObject[,] BoardMatrix { get => boardMatrix; set => boardMatrix = value; }
+    public PawnScript Repeater { get => repeater; set => repeater = value; }
 
     private GameStatus gameStatus;
     private GameObject[,] boardMatrix;
@@ -121,7 +122,7 @@ public class CheckersManager : MonoBehaviour
     }
     public void SetRepeater(PawnScript pawnScript)
     {
-        repeater = pawnScript;
+        Repeater = pawnScript;
 
     }
 
