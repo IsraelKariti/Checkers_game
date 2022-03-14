@@ -161,7 +161,16 @@ public class PawnScript : MonoBehaviour
             }
         }
 
-   
+        // After the step has finished (move or eat) check if the pawn is located at the opposite edge
+        if( (pawnType == PawnType.BLUE_KING || pawnType == PawnType.BLUE_PAWN) && zIndex == 7)
+        {
+            crown.SetActive(true);
+        }
+        else if ((pawnType == PawnType.RED_KING || pawnType == PawnType.RED_PAWN) && zIndex == 0)
+        {
+            crown.SetActive(true);
+        }
+
         return true;
     }
 
