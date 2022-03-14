@@ -18,12 +18,21 @@ public class PawnScript : MonoBehaviour
     private int xIndex;
     private int zIndex;
     private float yBoardPos = 0.07f;
+    private int insideAnotherPawnCounter = 0;
     public PawnType Type { get => pawnType; set => pawnType = value; }
     public int XIndex { get => xIndex; set => xIndex = value; }
     public int ZIndex { get => zIndex; set => zIndex = value; }
     public CheckersManager CheckersManager { get => checkersManager; set => checkersManager = value; }
 
-    
+    private void OnTriggerEnter(Collider other)
+    {
+        insideAnotherPawnCounter++;
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        insideAnotherPawnCounter--;
+    }
+
     // this function is called when the player picks up a soldier
     public void ResolveStartMovement()
     {
@@ -46,6 +55,7 @@ public class PawnScript : MonoBehaviour
 
         
     }
+    // This function is called when the user release the grip 
     public void ResolveEndMovement()
     {
         //STEP 1: get the position of the drop
@@ -58,8 +68,20 @@ public class PawnScript : MonoBehaviour
             // snap back to original position
             transform.localPosition = SnapBack();
         }
-        //STEP 3: find the respective matrix index of the drop position
+        //STEP 3: check if pawn droppen on top of another pawn
+        if (CheckIfOnTopAnotherPawn()>0)
+        {
+            Debug.Log("pawn dropped on top of another pawn!");
+            // snap back to original position
+            transform.localPosition = SnapBack();
+        }
+        //STEP 4: find the respective matrix index of the drop position
 
+    }
+
+    private int CheckIfOnTopAnotherPawn()
+    {
+        return insideAnotherPawnCounter;
     }
 
     private Vector3 SnapBack()
