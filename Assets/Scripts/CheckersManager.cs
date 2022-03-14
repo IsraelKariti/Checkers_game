@@ -13,13 +13,13 @@ public class CheckersManager : MonoBehaviour
 
     private List<GameObject> redPawnList;
     private List<GameObject> bluePawnList;
-    private int[,] backendBoard;
+    private int[,] boardMatrix;
     // Start is called before the first frame update
     void Start()
     {
         redPawnList = new List<GameObject>();
         bluePawnList = new List<GameObject>();
-        backendBoard = new int[8, 8] { 
+        boardMatrix = new int[8, 8] { 
             { 1,0,1,0,1,0,1,0},// 1 - blue
             { 0,1,0,1,0,1,0,1},
             { 1,0,1,0,1,0,1,0},
@@ -81,10 +81,16 @@ public class CheckersManager : MonoBehaviour
         {
             // create the pawn
             temp = Instantiate(prefab, visualBoard.transform);
+            // update pawn fields
+            PawnScript pawnScript = temp.GetComponent<PawnScript>();
             // give the pawn ref to this script
-            temp.GetComponent<PawnScript>().setCheckersManager(this);
+            pawnScript.setCheckersManager(this);
             // set the type of the pawn
-            temp.GetComponent<PawnScript>().Type = type;
+            pawnScript.Type = type;
+            // set pawn index in board matrix
+            pawnScript.XIndex = convertPositionToIndex(xPos);
+            // set pawn index in board matrix
+            pawnScript.ZIndex = convertPositionToIndex(zPos);
             // set the pawn position
             temp.transform.localPosition = new Vector3(xPos, 0.07f, zPos);
             // save pawn to a list
@@ -93,5 +99,9 @@ public class CheckersManager : MonoBehaviour
         }
     }
 
-   
+    private int convertPositionToIndex(float pos)
+    {
+        pos *= 10; // convert 0.15 -> 1.5
+        return (int)pos;
+    }
 }
