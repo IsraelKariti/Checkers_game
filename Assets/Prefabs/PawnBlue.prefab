@@ -470,7 +470,6 @@ GameObject:
   - component: {fileID: 5465864195235670597}
   - component: {fileID: 5465864195235670599}
   - component: {fileID: 5465864195235670598}
-  - component: {fileID: 2432896380401346117}
   m_Layer: 0
   m_Name: PawnGraphics
   m_TagString: pawn
@@ -543,17 +542,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &2432896380401346117
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5465864195235670596}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 0
-  m_Radius: 0.5000001
-  m_Height: 20
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}

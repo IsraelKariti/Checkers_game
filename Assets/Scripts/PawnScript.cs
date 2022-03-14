@@ -393,7 +393,7 @@ public class PawnScript : MonoBehaviour
         {
             // check if there is an enemy between src and dest positions
             PawnScript middlePawn = boardMatrix[zIndex + fwd, xIndex + 1]?.GetComponent<PawnScript>();
-            if (middlePawn == null || middlePawn.pawnType == PawnType.BLUE_PAWN || middlePawn.pawnType == PawnType.BLUE_KING)
+            if (middlePawn == null || middlePawn.pawnType != rivalPawn && middlePawn.pawnType == rivalKing)
                 return false;
 
             // move this pawn on the board matrix
@@ -421,7 +421,7 @@ public class PawnScript : MonoBehaviour
         {
             // check if there is an enemy between src and dest positions
             PawnScript middlePawn = boardMatrix[zIndex + fwd, xIndex - 1 ]?.GetComponent<PawnScript>();
-            if (middlePawn == null || middlePawn.pawnType == PawnType.BLUE_PAWN || middlePawn.pawnType == PawnType.BLUE_KING)
+            if (middlePawn == null || middlePawn.pawnType != rivalPawn && middlePawn.pawnType == rivalKing)
                 return false;
 
             // move this pawn on the board matrix
@@ -449,7 +449,7 @@ public class PawnScript : MonoBehaviour
         {
             // check if there is an enemy between src and dest positions
             PawnScript middlePawn = boardMatrix[ zIndex - fwd, xIndex + 1]?.GetComponent<PawnScript>();
-            if (middlePawn == null || middlePawn.pawnType == PawnType.BLUE_PAWN || middlePawn.pawnType == PawnType.BLUE_KING)
+            if (middlePawn == null || middlePawn.pawnType != rivalPawn && middlePawn.pawnType == rivalKing)
                 return false;
 
             // move this pawn on the board matrix
@@ -478,7 +478,7 @@ public class PawnScript : MonoBehaviour
         {
             // check if there is an enemy between src and dest positions
             PawnScript middlePawn = boardMatrix[zIndex - fwd,xIndex - 1]?.GetComponent<PawnScript>();
-            if (middlePawn == null || middlePawn.pawnType == PawnType.BLUE_PAWN || middlePawn.pawnType == PawnType.BLUE_KING)
+            if (middlePawn == null || middlePawn.pawnType != rivalPawn && middlePawn.pawnType == rivalKing)
                 return false;
 
             // move this pawn on the board matrix
