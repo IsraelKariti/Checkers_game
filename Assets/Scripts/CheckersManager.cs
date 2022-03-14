@@ -47,13 +47,13 @@ public class CheckersManager : MonoBehaviour
         float zPos = 0.55f;
 
         // initialize the first line
-        InitLine(xPos, zPos, pawnRedPrefab, redPawnList);
+        InitLine(xPos, zPos, pawnRedPrefab, redPawnList, PawnType.RED_PAWN);
 
         // initialize the first line
-        InitLine(xPos - 0.1f, zPos + 0.1f, pawnRedPrefab, redPawnList);
+        InitLine(xPos - 0.1f, zPos + 0.1f, pawnRedPrefab, redPawnList, PawnType.RED_PAWN);
 
         // initialize the first line
-        InitLine(xPos, zPos + 0.2f, pawnRedPrefab, redPawnList);
+        InitLine(xPos, zPos + 0.2f, pawnRedPrefab, redPawnList, PawnType.RED_PAWN);
     }
 
     private void InitBlue()
@@ -63,17 +63,17 @@ public class CheckersManager : MonoBehaviour
         float zPos = 0.05f;
 
         // initialize the first line
-        InitLine(xPos, zPos, pawnBluePrefab, bluePawnList);
+        InitLine(xPos, zPos, pawnBluePrefab, bluePawnList, PawnType.BLUE_PAWN);
 
         // initialize the first line
-        InitLine(xPos+0.1f, zPos+0.1f, pawnBluePrefab, bluePawnList);
+        InitLine(xPos+0.1f, zPos+0.1f, pawnBluePrefab, bluePawnList, PawnType.BLUE_PAWN);
 
         // initialize the first line
-        InitLine(xPos, zPos+0.2f, pawnBluePrefab, bluePawnList);
+        InitLine(xPos, zPos+0.2f, pawnBluePrefab, bluePawnList, PawnType.BLUE_PAWN);
 
     }
 
-    private void InitLine(float xPos, float zPos, GameObject prefab, List<GameObject> list)
+    private void InitLine(float xPos, float zPos, GameObject prefab, List<GameObject> list, PawnType type)
     {
         GameObject temp;
 
@@ -83,6 +83,8 @@ public class CheckersManager : MonoBehaviour
             temp = Instantiate(prefab, visualBoard.transform);
             // give the pawn ref to this script
             temp.GetComponent<PawnScript>().setCheckersManager(this);
+            // set the type of the pawn
+            temp.GetComponent<PawnScript>().Type = type;
             // set the pawn position
             temp.transform.localPosition = new Vector3(xPos, 0.07f, zPos);
             // save pawn to a list
