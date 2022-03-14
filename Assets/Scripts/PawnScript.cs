@@ -400,12 +400,13 @@ public class PawnScript : MonoBehaviour
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
 
-            // update local indices
-            xIndex = dropXIndex;
-            zIndex = dropZIndex;
+            
             // eat the pawn in the middle
             Destroy(boardMatrix[zIndex + fwd, xIndex + 1]);
             boardMatrix[zIndex + fwd, xIndex + 1] = null;
+            // update local indices
+            xIndex = dropXIndex;
+            zIndex = dropZIndex;
             // update number of enemies
             DecRival();
             //TODO: enter repeat mode
@@ -416,7 +417,7 @@ public class PawnScript : MonoBehaviour
     private bool AttemptEatFwdLeft()
     {
         // check up right eat
-        if (xIndex - 2 == dropXIndex && zIndex + 2*fwd == dropZIndex)
+         if (xIndex - 2 == dropXIndex && zIndex + 2*fwd == dropZIndex)
         {
             // check if there is an enemy between src and dest positions
             PawnScript middlePawn = boardMatrix[zIndex + fwd, xIndex - 1 ]?.GetComponent<PawnScript>();
@@ -427,12 +428,13 @@ public class PawnScript : MonoBehaviour
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
 
-            // update local indices
-            xIndex = dropXIndex;
-            zIndex = dropZIndex;
+            
             // eat the pawn in the middle
             Destroy(boardMatrix[zIndex + fwd, xIndex - 1]);
             boardMatrix[zIndex + fwd, xIndex - 1] = null;
+            // update local indices
+            xIndex = dropXIndex;
+            zIndex = dropZIndex;
             // update number of enemies
             DecRival();
             //TODO: enter repeat mode
@@ -454,13 +456,14 @@ public class PawnScript : MonoBehaviour
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
 
-            // update local indices
-            xIndex = dropXIndex;
-            zIndex = dropZIndex;
+            
 
             // eat the pawn in the middle
             Destroy(boardMatrix[zIndex - fwd,  xIndex + 1]);
             boardMatrix[zIndex - fwd, xIndex + 1] = null;
+            // update local indices
+            xIndex = dropXIndex;
+            zIndex = dropZIndex;
             // update number of enemies
             DecRival();
             //TODO: enter repeat mode
@@ -482,13 +485,14 @@ public class PawnScript : MonoBehaviour
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
 
-            // update local indices
-            xIndex = dropXIndex;
-            zIndex = dropZIndex;
+            
 
             // eat the pawn in the middle
             Destroy(boardMatrix[zIndex - fwd,xIndex - 1 ]);
             boardMatrix[zIndex - fwd, xIndex - 1 ] = null;
+            // update local indices
+            xIndex = dropXIndex;
+            zIndex = dropZIndex;
             // update number of enemies
             DecRival();
             //TODO: enter repeat mode
