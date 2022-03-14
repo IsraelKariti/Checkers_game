@@ -20,11 +20,12 @@ public class PawnScript : MonoBehaviour
     private int xIndex;
     private int zIndex;
     private float yBoardPos = 0.07f;
-    private int insideAnotherPawnCounter = 0;
+    //private int insideAnotherPawnCounter = 0;
     private GameObject[,] boardMatrix;
     private int dropXIndex;
     private int dropZIndex;
     private int fwd;// for blue this means +1, and for red this is -1 as they are heading in opposite directions
+    //private bool isHeld = false;
     public PawnType PawnType { get => pawnType; 
             set { 
             pawnType = value;
@@ -47,23 +48,34 @@ public class PawnScript : MonoBehaviour
     public GameObject[,] BoardMatrix { get => boardMatrix; set => boardMatrix = value; }
     public int ForwardMovement { get => fwd; set => fwd = value; }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        insideAnotherPawnCounter++;
-    }
-    private void OnTriggerExit(Collider other)
-    {
-        insideAnotherPawnCounter--;
-    }
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    if (isHeld && other.gameObject.CompareTag("pawn")){
+    //        insideAnotherPawnCounter++;
+    //        Debug.Log(gameObject.ToString()+gameObject.transform.localPosition+" Enter collider: " + other.gameObject.ToString() + " " + other.transform.parent.localPosition + " count: "+ insideAnotherPawnCounter);
+    //    }
+
+    //}
+    //private void OnTriggerExit(Collider other)
+    //{
+    //    if (isHeld && other.gameObject.CompareTag("pawn"))
+    //    {
+    //        insideAnotherPawnCounter--;
+    //        Debug.Log(gameObject.ToString() + gameObject.transform.localPosition + " Exit collider: " + other.gameObject.ToString() + " " + other.transform.parent.localPosition + " count: " + insideAnotherPawnCounter);
+
+    //    }
+    //}
 
     // this function is called when the player picks up a soldier
     public void ResolveStartMovement()
     {
-        Debug.Log("movementttttttttttttttt");
+        Debug.Log("movementttttttttttttttt ");
+        //isHeld = true;
     }
     // This function is called when the user release the grip 
     public void ResolveEndMovement()
     {
+        //isHeld = false;
         // STEP 0: Check if this pawn color is even suppose to play now
         if (!IsCorrectPlayerMoving())
         {
@@ -83,17 +95,26 @@ public class PawnScript : MonoBehaviour
             transform.localPosition = SnapBack();
             return;
         }
+        //STEP 4: find the respective matrix indices of the drop position
+        dropXIndex = ConvertPosToIndex(dropX);
+        dropZIndex = ConvertPosToIndex(dropZ);
+
+        if (!CheckIfDroppedOnLegalSquare())
+        {
+            Debug.Log("pawn dropped on unavailable board square!");
+            // snap back to original position
+            transform.localPosition = SnapBack();
+            return;
+        }
         //STEP 3: check if pawn droppen on top of another pawn
-        if (CheckIfOnTopAnotherPawn()>0)
+        if (!CheckIfDroppedOnClearSquare())
         {
             Debug.Log("pawn dropped on top of another pawn!");
             // snap back to original position
             transform.localPosition = SnapBack();
             return;
         }
-        //STEP 4: find the respective matrix indices of the drop position
-        dropXIndex = ConvertPosToIndex(dropX);
-        dropZIndex = ConvertPosToIndex(dropZ);
+        
         //STEP 5: Check if the position is legal move for this pawn
         if (!CheckIfLegalMove())
         {
@@ -472,9 +493,19 @@ public class PawnScript : MonoBehaviour
         return (int)dropX;// 2.34 -> 2
     }
 
-    private int CheckIfOnTopAnotherPawn()
+    private bool CheckIfDroppedOnLegalSquare()
     {
-        return insideAnotherPawnCounter;
+        // 
+        if(dropZIndex%2 == dropXIndex%2)
+            return true;
+        return false;
+    }
+    private bool CheckIfDroppedOnClearSquare()
+    {
+        // 
+        if(boardMatrix[dropZIndex,dropXIndex] == null)
+            return true;
+        return false;
     }
 
     private Vector3 SnapBack()
