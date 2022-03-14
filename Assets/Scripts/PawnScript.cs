@@ -160,9 +160,17 @@ public class PawnScript : MonoBehaviour
                 return false;
             }
         }
-
+        // check if game is finished and update status
+        if(checkersManager.RedCounter == 0)
+        {
+            checkersManager.GameStatus = GameStatus.BLUE_WON;
+        }
+        else if(checkersManager.BlueCounter == 0)
+        {
+            checkersManager.GameStatus = GameStatus.RED_WON;
+        }
         // After the step has finished (move or eat) check if the pawn is located at the opposite edge
-        if( (pawnType == PawnType.BLUE_KING || pawnType == PawnType.BLUE_PAWN) && zIndex == 7)
+        else if( (pawnType == PawnType.BLUE_KING || pawnType == PawnType.BLUE_PAWN) && zIndex == 7)
         {
             crown.SetActive(true);
         }

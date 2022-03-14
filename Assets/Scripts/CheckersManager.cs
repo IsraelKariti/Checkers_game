@@ -2,23 +2,44 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 public enum GameStatus
 {
     RED_TURN,
     BLUE_TURN,
     RED_REPEAT,// this status is for when the red player has eaten and MUST eat again
-    BLUE_REPEAT
+    BLUE_REPEAT,
+    RED_WON,
+    BLUE_WON
+
 }
 public class CheckersManager : MonoBehaviour
 {
     public GameObject pawnRedPrefab;
     public GameObject pawnBluePrefab;
     public GameObject visualBoard;
+    public TMP_Text winText;
 
-
-    public GameStatus GameStatus { get => gameStatus; set => gameStatus = value; }
+    public GameStatus GameStatus { get => gameStatus; 
+        set 
+        { 
+            gameStatus = value; 
+            if(gameStatus == GameStatus.BLUE_WON)
+            {
+                winText.gameObject.SetActive(true);
+                winText.text = "BLUE WON!";
+            }
+            else if (gameStatus == GameStatus.RED_WON)
+            {
+                winText.gameObject.SetActive(true);
+                winText.text = "RED WON!";
+            }
+        }
+    }
     public GameObject[,] BoardMatrix { get => boardMatrix; set => boardMatrix = value; }
     public PawnScript Repeater { get => repeater; set => repeater = value; }
+    public int RedCounter { get => redCounter; set => redCounter = value; }
+    public int BlueCounter { get => blueCounter; set => blueCounter = value; }
 
     private GameStatus gameStatus;
     private GameObject[,] boardMatrix;
@@ -113,12 +134,12 @@ public class CheckersManager : MonoBehaviour
     // decrease the value of red pawns
     public void decRed()
     {
-        redCounter--;
+        RedCounter--;
     }
     // decrease the value of blue pawns
     public void decBlue()
     {
-        blueCounter--;
+        BlueCounter--;
     }
     public void SetRepeater(PawnScript pawnScript)
     {
