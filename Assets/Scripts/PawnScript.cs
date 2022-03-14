@@ -15,6 +15,8 @@ public class PawnScript : MonoBehaviour
 {
     private CheckersManager checkersManager;
     private PawnType pawnType;
+    private PawnType rivalPawn;
+    private PawnType rivalKing;
     private int xIndex;
     private int zIndex;
     private float yBoardPos = 0.07f;
@@ -22,11 +24,28 @@ public class PawnScript : MonoBehaviour
     private GameObject[,] boardMatrix;
     private int dropXIndex;
     private int dropZIndex;
-    public PawnType PawnType { get => pawnType; set => pawnType = value; }
+    private int fwd;// for blue this means +1, and for red this is -1 as they are heading in opposite directions
+    public PawnType PawnType { get => pawnType; 
+            set { 
+            pawnType = value;
+            if(pawnType == PawnType.BLUE_PAWN || pawnType == PawnType.BLUE_KING)
+            {
+                fwd = 1;
+                rivalPawn = PawnType.RED_PAWN;
+                rivalKing = PawnType.RED_KING;
+            }
+            else
+            {
+                fwd = -1;
+                rivalPawn = PawnType.BLUE_PAWN;
+                rivalKing = PawnType.BLUE_KING;
+            }
+        } }
     public int XIndex { get => xIndex; set => xIndex = value; }
     public int ZIndex { get => zIndex; set => zIndex = value; }
     public CheckersManager CheckersManager { get => checkersManager; set => checkersManager = value; }
     public GameObject[,] BoardMatrix { get => boardMatrix; set => boardMatrix = value; }
+    public int ForwardMovement { get => fwd; set => fwd = value; }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -102,21 +121,21 @@ public class PawnScript : MonoBehaviour
         // 
         if(checkersManager.GameStatus==GameStatus.BLUE_TURN && pawnType == PawnType.BLUE_PAWN)
         {
-            if(!AttemptBluePawnFirstStep())
+            if(!AttemptPawnFirstStep())
             {
                 return false;
             }
         }
         else if(checkersManager.GameStatus == GameStatus.BLUE_REPEAT && pawnType == PawnType.BLUE_PAWN)
         {
-            if (!AttemptBluePawnRepeatStep())
+            if (!AttemptPawnRepeatStep())
             {
                 return false;
             }
         }
         else if (checkersManager.GameStatus == GameStatus.BLUE_TURN && pawnType == PawnType.BLUE_KING)
         {
-            if (!AttemptBlueKingStep())
+            if (!AttemptKingStep())
             {
                 return false;
             }
@@ -136,13 +155,13 @@ public class PawnScript : MonoBehaviour
         return true;
     }
 
-    private bool AttemptBlueKingStep()
+    private bool AttemptKingStep()
     {
         // check how many blue and red pawns between src and dst
-        int redCounter = 0;
-        int redX = 0;
-        int redZ = 0;
-        int blueCounter = 0;
+        int rivalCounter = 0;
+        int rivalX = 0;
+        int rivalZ = 0;
+        int foeCounter = 0;
         // the direction of the diagonal from src to dst
         int xDir = xIndex < dropXIndex ? 1 : -1;
         int zDir = zIndex < dropZIndex ? 1 : -1;
@@ -152,48 +171,58 @@ public class PawnScript : MonoBehaviour
             if (boardMatrix[z, x] == null)
                 continue;
             PawnType pt = boardMatrix[z, x].GetComponent<PawnScript>().PawnType;
-            if (pt == PawnType.BLUE_KING || pt == PawnType.BLUE_PAWN)
-                blueCounter++;
-            if (pt == PawnType.RED_KING || pt == PawnType.RED_PAWN)
+            if (pt == rivalPawn || pt == rivalKing)
             {
-                redCounter++;
+                rivalCounter++;
                 // save the matrix indexes of the rival
-                redX = x;
-                redZ = z;
+                rivalX = x;
+                rivalZ = z;
+            }
+            else
+            {
+                foeCounter++;
             }
         }
         // there are foes in the way OR there are more than one rival
-        if (blueCounter > 0 || redCounter > 1)
+        if (foeCounter > 0 || rivalCounter > 1)
             return false;
 
         // move this pawn on the board matrix
         boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
         boardMatrix[zIndex, xIndex] = null;
-        if (redCounter > 0)
+        if (rivalCounter > 0)
         {
             // eat the pawn in the middle
-            Destroy(checkersManager.BoardMatrix[redZ, redX]);
-            checkersManager.BoardMatrix[redZ, redX] = null;
+            Destroy(boardMatrix[rivalZ, rivalX]);
+            boardMatrix[rivalZ, rivalX] = null;
             // update number of enemies
-            checkersManager.decRed();
+
+            DecRival();
         }
-        
+
         //TODO: enter repeat mode
         return true;
     }
 
-
+    // decrease the number count of rivals
+    private void DecRival()
+    {
+        if (rivalPawn == PawnType.RED_PAWN)
+            checkersManager.decRed();
+        else
+            checkersManager.decBlue();
+    }
 
     // check if the blue pawn first step is legal: move a square OR eat a square
-    private bool AttemptBluePawnFirstStep()
+    private bool AttemptPawnFirstStep()
     {
         // check if the blue player first step is move with no eating
-        if(AttemptBlueMoveRightUp() || AttemptBlueMoveLeftUp() )
+        if(AttemptMoveFwdRight() || AttemptMoveFwdLeft() )
         {
             return true;
         }
         // check if the blue first step is an eating step
-        if(AttemptBlueEatRightUp() || AttemptBlueEatLeftUp())
+        if(AttemptEatFwdRight() || AttemptEatFwdLeft())
         {
             return true;
         }
@@ -201,20 +230,21 @@ public class PawnScript : MonoBehaviour
         return false;
     }
     // check if the blue pawn first step is legal: move a square OR eat a square
-    private bool AttemptBluePawnRepeatStep()
+    private bool AttemptPawnRepeatStep()
     {
         // check if the blue player first step is move with no eating
-        if (AttemptBlueEatRightUp() || AttemptBlueEatLeftUp() || AttemptBlueEatLeftDown() || AttemptBlueEatRightDown())
+        if (AttemptEatFwdRight() || AttemptEatFwdLeft() || AttemptEatBwdLeft() || AttemptEatBwdRight())
         {
             return true;
         }
 
         return false;
     }
-    private bool AttemptBlueMoveRightUp()
+    // try to move the pawn forward (+1 for blue, -1 for red) and positive on Z axis
+    private bool AttemptMoveFwdRight()
     {
         // check up right move
-        if (xIndex + 1 == dropXIndex && zIndex + 1 == dropZIndex)
+        if (xIndex + 1 == dropXIndex && zIndex + fwd == dropZIndex)
         {
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
@@ -222,10 +252,10 @@ public class PawnScript : MonoBehaviour
         }
         return false;
     }
-    private bool AttemptBlueMoveLeftUp()
+    private bool AttemptMoveFwdLeft()
     {
         // check up right move
-        if (xIndex - 1 == dropXIndex && zIndex + 1 == dropZIndex)
+        if (xIndex - 1 == dropXIndex && zIndex + fwd == dropZIndex)
         {
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
@@ -233,10 +263,10 @@ public class PawnScript : MonoBehaviour
         }
         return false;
     }
-    private bool AttemptBlueMoveRightDown()
+    private bool AttemptMoveBwdRight()
     {
         // check up right move
-        if (xIndex + 1 == dropXIndex && zIndex - 1 == dropZIndex)
+        if (xIndex + 1 == dropXIndex && zIndex - fwd == dropZIndex)
         {
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
@@ -244,10 +274,10 @@ public class PawnScript : MonoBehaviour
         }
         return false;
     }
-    private bool AttemptBlueMoveLeftDown()
+    private bool AttemptMoveBwdLeft()
     {
         // check up right move
-        if (xIndex - 1 == dropXIndex && zIndex - 1 == dropZIndex)
+        if (xIndex - 1 == dropXIndex && zIndex - fwd == dropZIndex)
         {
             boardMatrix[dropZIndex, dropXIndex] = boardMatrix[zIndex, xIndex];
             boardMatrix[zIndex, xIndex] = null;
@@ -255,13 +285,13 @@ public class PawnScript : MonoBehaviour
         }
         return false;
     }
-    private bool AttemptBlueEatRightUp()
+    private bool AttemptEatFwdRight()
     {
         // check up right eat
-        if (xIndex + 2 == dropXIndex && zIndex + 2 == dropZIndex)
+        if (xIndex + 2 == dropXIndex && zIndex + 2*fwd == dropZIndex)
         {
             // check if there is an enemy between src and dest positions
-            PawnScript middlePawn = checkersManager.BoardMatrix[xIndex + 1, zIndex + 1]?.GetComponent<PawnScript>();
+            PawnScript middlePawn = boardMatrix[zIndex + fwd, xIndex + 1]?.GetComponent<PawnScript>();
             if (middlePawn == null || middlePawn.pawnType == PawnType.BLUE_PAWN || middlePawn.pawnType == PawnType.BLUE_KING)
                 return false;
 
@@ -270,22 +300,22 @@ public class PawnScript : MonoBehaviour
             boardMatrix[zIndex, xIndex] = null;
 
             // eat the pawn in the middle
-            Destroy(checkersManager.BoardMatrix[xIndex + 1, zIndex + 1]);
-            checkersManager.BoardMatrix[xIndex + 1, zIndex + 1] = null;
+            Destroy(boardMatrix[zIndex + fwd, xIndex + 1]);
+            boardMatrix[zIndex + fwd, xIndex + 1] = null;
             // update number of enemies
-            checkersManager.decRed();
+            DecRival();
             //TODO: enter repeat mode
             return true;
         }
         return false;
     }
-    private bool AttemptBlueEatLeftUp()
+    private bool AttemptEatFwdLeft()
     {
         // check up right eat
-        if (xIndex - 2 == dropXIndex && zIndex + 2 == dropZIndex)
+        if (xIndex - 2 == dropXIndex && zIndex + 2*fwd == dropZIndex)
         {
             // check if there is an enemy between src and dest positions
-            PawnScript middlePawn = checkersManager.BoardMatrix[xIndex - 1, zIndex + 1]?.GetComponent<PawnScript>();
+            PawnScript middlePawn = boardMatrix[zIndex + fwd, xIndex - 1 ]?.GetComponent<PawnScript>();
             if (middlePawn == null || middlePawn.pawnType == PawnType.BLUE_PAWN || middlePawn.pawnType == PawnType.BLUE_KING)
                 return false;
 
@@ -294,22 +324,22 @@ public class PawnScript : MonoBehaviour
             boardMatrix[zIndex, xIndex] = null;
 
             // eat the pawn in the middle
-            Destroy(checkersManager.BoardMatrix[xIndex - 1, zIndex + 1]);
-            checkersManager.BoardMatrix[xIndex - 1, zIndex + 1] = null;
+            Destroy(boardMatrix[zIndex + fwd, xIndex - 1]);
+            boardMatrix[zIndex + fwd, xIndex - 1] = null;
             // update number of enemies
-            checkersManager.decRed();
+            DecRival();
             //TODO: enter repeat mode
             return true;
         }
         return false;
     }
-    private bool AttemptBlueEatRightDown()
+    private bool AttemptEatBwdRight()
     {
         // check up right eat
-        if (xIndex + 2 == dropXIndex && zIndex - 2 == dropZIndex)
+        if (xIndex + 2 == dropXIndex && zIndex - 2*fwd == dropZIndex)
         {
             // check if there is an enemy between src and dest positions
-            PawnScript middlePawn = checkersManager.BoardMatrix[xIndex + 1, zIndex - 1]?.GetComponent<PawnScript>();
+            PawnScript middlePawn = boardMatrix[ zIndex - fwd, xIndex + 1]?.GetComponent<PawnScript>();
             if (middlePawn == null || middlePawn.pawnType == PawnType.BLUE_PAWN || middlePawn.pawnType == PawnType.BLUE_KING)
                 return false;
 
@@ -318,22 +348,22 @@ public class PawnScript : MonoBehaviour
             boardMatrix[zIndex, xIndex] = null;
 
             // eat the pawn in the middle
-            Destroy(checkersManager.BoardMatrix[xIndex + 1, zIndex - 1]);
-            checkersManager.BoardMatrix[xIndex + 1, zIndex - 1] = null;
+            Destroy(boardMatrix[zIndex - fwd,  xIndex + 1]);
+            boardMatrix[zIndex - fwd, xIndex + 1] = null;
             // update number of enemies
-            checkersManager.decRed();
+            DecRival();
             //TODO: enter repeat mode
             return true;
         }
         return false;
     }
-    private bool AttemptBlueEatLeftDown()
+    private bool AttemptEatBwdLeft()
     {
         // check up right eat
-        if (xIndex - 2 == dropXIndex && zIndex - 2 == dropZIndex)
+        if (xIndex - 2 == dropXIndex && zIndex - 2*fwd == dropZIndex)
         {
             // check if there is an enemy between src and dest positions
-            PawnScript middlePawn = checkersManager.BoardMatrix[xIndex - 1, zIndex - 1]?.GetComponent<PawnScript>();
+            PawnScript middlePawn = boardMatrix[zIndex - fwd,xIndex - 1]?.GetComponent<PawnScript>();
             if (middlePawn == null || middlePawn.pawnType == PawnType.BLUE_PAWN || middlePawn.pawnType == PawnType.BLUE_KING)
                 return false;
 
@@ -342,10 +372,10 @@ public class PawnScript : MonoBehaviour
             boardMatrix[zIndex, xIndex] = null;
 
             // eat the pawn in the middle
-            Destroy(checkersManager.BoardMatrix[xIndex - 1, zIndex - 1]);
-            checkersManager.BoardMatrix[xIndex - 1, zIndex - 1] = null;
+            Destroy(boardMatrix[zIndex - fwd,xIndex - 1 ]);
+            boardMatrix[zIndex - fwd, xIndex - 1 ] = null;
             // update number of enemies
-            checkersManager.decRed();
+            DecRival();
             //TODO: enter repeat mode
             return true;
         }
