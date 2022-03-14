@@ -26,6 +26,7 @@ public class PawnScript : MonoBehaviour
     private int dropZIndex;
     private int fwd;// for blue this means +1, and for red this is -1 as they are heading in opposite directions
     //private bool isHeld = false;
+    private bool rivalEaten;
     public PawnType PawnType { get => pawnType; 
             set { 
             pawnType = value;
@@ -71,6 +72,7 @@ public class PawnScript : MonoBehaviour
     {
         Debug.Log("movementttttttttttttttt ");
         //isHeld = true;
+        rivalEaten = false;
     }
     // This function is called when the user release the grip 
     public void ResolveEndMovement()
@@ -137,7 +139,6 @@ public class PawnScript : MonoBehaviour
         if(!CheckIfOrigAndDestDiffer())
         {
             Debug.Log("You havn't moved, try again!");
-
             return false;
         }
 
@@ -160,17 +161,25 @@ public class PawnScript : MonoBehaviour
                 return false;
             }
         }
+        HandlePostStep();
+        
+
+        return true;
+    }
+
+    private void HandlePostStep()
+    {
         // check if game is finished and update status
-        if(checkersManager.RedCounter == 0)
+        if (checkersManager.RedCounter == 0)
         {
             checkersManager.GameStatus = GameStatus.BLUE_WON;
         }
-        else if(checkersManager.BlueCounter == 0)
+        else if (checkersManager.BlueCounter == 0)
         {
             checkersManager.GameStatus = GameStatus.RED_WON;
         }
         // After the step has finished (move or eat) check if the pawn is located at the opposite edge
-        else if( (pawnType == PawnType.BLUE_KING || pawnType == PawnType.BLUE_PAWN) && zIndex == 7)
+        else if ((pawnType == PawnType.BLUE_KING || pawnType == PawnType.BLUE_PAWN) && zIndex == 7)
         {
             crown.SetActive(true);
         }
@@ -178,10 +187,76 @@ public class PawnScript : MonoBehaviour
         {
             crown.SetActive(true);
         }
+        // in case step included eating 
+        else if (rivalEaten && IsPossibleToEatAgain())// check if this pawn can eat again
+        {
+            checkersManager.EnableRepeat();
+        }
+    }
+
+    private bool IsPossibleToEatAgain()
+    {
+        if(IsPossibleToEatAgainFwdRight() || IsPossibleToEatAgainFwdLeft() || IsPossibleToEatAgainBwdRight() || IsPossibleToEatAgainBwdLeft())
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private bool IsPossibleToEatAgainFwdRight()
+    {
+        int nearX = xIndex + 1;
+        int nearZ = zIndex + 1 * fwd;
+        int farX = xIndex + 2;
+        int farZ = zIndex + 2 * fwd;
+
+        return IsPossibleToEatAdjacentPawn(nearX, nearZ, farX, farZ);
+
+    }
+    private bool IsPossibleToEatAgainFwdLeft()
+    {
+        int nearX = xIndex - 1;
+        int nearZ = zIndex + 1 * fwd;
+        int farX = xIndex - 2;
+        int farZ = zIndex + 2 * fwd;
+
+        return IsPossibleToEatAdjacentPawn(nearX, nearZ, farX, farZ);
+
+    }
+    private bool IsPossibleToEatAgainBwdRight()
+    {
+        int nearX = xIndex + 1;
+        int nearZ = zIndex - 1 * fwd;
+        int farX = xIndex + 2;
+        int farZ = zIndex - 2 * fwd;
+
+        return IsPossibleToEatAdjacentPawn(nearX, nearZ, farX, farZ);
+
+    }
+    private bool IsPossibleToEatAgainBwdLeft()
+    {
+        int nearX = xIndex - 1;
+        int nearZ = zIndex - 1 * fwd;
+        int farX = xIndex - 2;
+        int farZ = zIndex - 2 * fwd;
+
+        return IsPossibleToEatAdjacentPawn(nearX, nearZ, farX, farZ);
+    }
+    private bool IsPossibleToEatAdjacentPawn(int nearX, int nearZ, int farX, int farZ)
+    {
+        if (nearX < 0 || nearX > 7 || nearZ < 0 || nearZ > 7)
+            return false;
+        if (farX < 0 || farX > 7 || farZ < 0 || farZ > 7)
+            return false;
+        if (boardMatrix[farZ, farX] != null)
+            return false;
+        PawnType nearPawnType = boardMatrix[nearZ, nearX].GetComponent<PawnScript>().pawnType;
+        if (nearPawnType != rivalPawn && nearPawnType != rivalKing)
+            return false;
 
         return true;
     }
-
+    
     private bool AttemptFirstStep()
     {
         if(pawnType == PawnType.RED_PAWN || pawnType == PawnType.BLUE_PAWN)
@@ -291,7 +366,6 @@ public class PawnScript : MonoBehaviour
             Destroy(boardMatrix[rivalZ, rivalX]);
             boardMatrix[rivalZ, rivalX] = null;
             // update number of enemies
-
             DecRival();
         }
 
@@ -306,6 +380,8 @@ public class PawnScript : MonoBehaviour
             checkersManager.decRed();
         else
             checkersManager.decBlue();
+
+        rivalEaten = true;
     }
 
     // check if the blue pawn first step is legal: move a square OR eat a square

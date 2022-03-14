@@ -151,4 +151,11 @@ public class CheckersManager : MonoBehaviour
     {
         gameStatus = (gameStatus == GameStatus.BLUE_REPEAT || gameStatus == GameStatus.BLUE_TURN) ? GameStatus.RED_TURN : GameStatus.BLUE_TURN;
     }
+    public void EnableRepeat()
+    {
+        if (gameStatus == GameStatus.BLUE_TURN)
+            gameStatus = GameStatus.BLUE_REPEAT;
+        else if (gameStatus == GameStatus.RED_TURN)
+            gameStatus = GameStatus.RED_REPEAT;
+    }
 }
