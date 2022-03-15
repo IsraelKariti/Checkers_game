@@ -22,7 +22,7 @@ public class BoardScript : MonoBehaviour
         // if the object beneath the board is a table put the board on it
         if(hit.transform.gameObject.GetComponent<SpatialAwarenessPlanarObject>().SurfaceType == SpatialAwarenessSurfaceTypes.Platform)
         {
-            transform.position = hit.transform.position;
+            transform.position = hit.point;
         }
     }
 
