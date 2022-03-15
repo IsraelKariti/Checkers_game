@@ -28722,6 +28722,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1698852962}
+        m_TargetAssemblyTypeName: Microsoft.MixedReality.Toolkit.Experimental.SpatialAwareness.SurfaceMeshesToPlanes,
+          Microsoft.MixedReality.Toolkit.SDK
+        m_MethodName: MakePlanes
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 472784011226572544}
         m_TargetAssemblyTypeName: BoardScript, Assembly-CSharp
         m_MethodName: ResolveEndMovement

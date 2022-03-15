@@ -12,6 +12,9 @@ public class BoardScript : MonoBehaviour
     public void ResolveEndMovement()
     {
 
+        //REMEMBER: MakePlanes() is called from the OnManipulationEvent directly (attached in the inspector)
+
+        //TODO: check if there is a table below me
     }
 
     // Start is called before the first frame update
