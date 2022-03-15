@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Microsoft.MixedReality.Toolkit.SpatialAwareness;
+using Microsoft.MixedReality.Toolkit.Physics;
 public class BoardScript : MonoBehaviour
 {
+    
     public void ResolveStartMovement()
     {
         
@@ -15,6 +17,13 @@ public class BoardScript : MonoBehaviour
         //REMEMBER: MakePlanes() is called from the OnManipulationEvent directly (attached in the inspector)
 
         //TODO: check if there is a table below me
+        RaycastHit hit;
+        Physics.Raycast(transform.position, Vector3.down, out hit, 10.0f);
+        // if the object beneath the board is a table put the board on it
+        if(hit.transform.gameObject.GetComponent<SpatialAwarenessPlanarObject>().SurfaceType == SpatialAwarenessSurfaceTypes.Platform)
+        {
+            transform.position = hit.transform.position;
+        }
     }
 
     // Start is called before the first frame update
