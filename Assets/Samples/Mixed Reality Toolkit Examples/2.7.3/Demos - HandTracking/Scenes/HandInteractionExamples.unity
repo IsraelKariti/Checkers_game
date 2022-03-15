@@ -23729,6 +23729,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1698852960}
   - component: {fileID: 1698852961}
+  - component: {fileID: 1698852962}
   m_Layer: 0
   m_Name: MixedRealitySceneContent
   m_TagString: Untagged
@@ -23777,6 +23778,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   alignmentType: 1
   containerObject: {fileID: 0}
+--- !u!114 &1698852962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1698852959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a2cb1e04f356dc4c86da2dba3eaca9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  planesParent: {fileID: 0}
+  physicsLayer: 0
+  defaultMaterial: {fileID: 0}
+  minArea: 0.025
+  upNormalThreshold: 0.9
+  floorBuffer: 0.1
+  ceilingBuffer: 0.1
+  planeThickness: 0.01
 --- !u!114 &1700502666 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4448574576992466704, guid: ffbe4bef620a0a542bb77fe2f765c905, type: 3}
@@ -24543,7 +24564,7 @@ GameObject:
   - component: {fileID: 1721422931}
   - component: {fileID: 1721422930}
   m_Layer: 0
-  m_Name: MixedRealityToolkit
+  m_Name: MixedRealityToolkit (Inactive)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
