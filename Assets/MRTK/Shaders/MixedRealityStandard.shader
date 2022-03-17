@@ -279,7 +279,7 @@ Shader "Mixed Reality Toolkit/Standard"
 
             struct v2f
             {
-                float4 position : SV_POSITION;
+                //float4 position : SV_POSITION;    
 #if defined(_BORDER_LIGHT)
                 float4 uv : TEXCOORD0;
 #elif defined(_UV)
@@ -325,6 +325,7 @@ Shader "Mixed Reality Toolkit/Standard"
 #endif
                 UNITY_VERTEX_INPUT_INSTANCE_ID
                 UNITY_VERTEX_OUTPUT_STEREO
+                float4 position : SV_POSITION;
             };
 
             UNITY_INSTANCING_BUFFER_START(Props)
@@ -1199,8 +1200,8 @@ Shader "Mixed Reality Toolkit/Standard"
 
             struct v2f
             {
-                float4 vertex : SV_POSITION;
                 float2 uv : TEXCOORD0;
+                float4 vertex : SV_POSITION;
             };
 
             float4 _MainTex_ST;
