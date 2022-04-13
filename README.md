@@ -12,3 +12,6 @@ The rules comply user to chain-eat all opponent pawn that are available after an
 ![image](https://user-images.githubusercontent.com/89970476/163183584-2353e2fb-3857-487f-94cf-1fd78baf2158.png)
 ![image](https://user-images.githubusercontent.com/89970476/163183640-40e0286e-ba8f-46b1-9c64-775dfde700a0.png)
 ![image](https://user-images.githubusercontent.com/89970476/163183708-cd5fd741-3e86-4950-9e3e-941bfdea401e.png)
+
+Once an opponent ate all its rival's pawns a banner is shown and declare the winner:
+![image](https://user-images.githubusercontent.com/89970476/163192996-33e2f0a4-62f3-48a5-87cf-71432906922a.png)
