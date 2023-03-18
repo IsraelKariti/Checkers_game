@@ -1,5 +1,5 @@
 # MRTK-PLAYGROUND-1
-Checkers game in augmented reality, built with microsoft reality toolkit in Unity.  
+Checkers game in augmented reality, built with microsoft reality toolkit (MRTK) in Unity.  
 This game follows the normal rules of checkers, allowing the player to move pawns on the board and giving feedback when an illegal move is played
 The board itself can be floating in the room, be dragged using the green handle, or to obey physics and be dropped on a table
 ![image](https://user-images.githubusercontent.com/89970476/163179650-bde72a2a-9d2a-497f-9320-8f500bcc877c.png)
